@@ -10,8 +10,7 @@ const CONTACT = {
   agency: "巨業不動產經紀有限公司",
   line: "https://line.me/ti/p/1oOrGNBjI6"
 };
-// 本地開發用；正式上線時要換成代理伺服器實際部署的網址
-const TRASH_PROXY = "http://127.0.0.1:8767";
+const TRASH_PROXY = "https://youzi-taoyuan-tools.onrender.com";
 const RANGE_OPTIONS = [300, 400, 500];
 
 let map = null;
