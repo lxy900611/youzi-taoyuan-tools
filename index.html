@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>大桃園學區地圖 - 柚子幫你找學區宅</title>
+<meta name="description" content="輸入縣市、地區、門牌，快速查桃園市全13區115學年度國小國中學區。柚子（林顯祐）整理製作。">
+<link rel="stylesheet" href="lib/leaflet.css">
+<link rel="stylesheet" href="shell.css">
+<style>
+/* index.html 專屬：學區結果卡片 */
+.schoolCard{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid #e4e9e6;border-radius:10px;margin-bottom:6px}
+.swatch{flex:none;width:14px;height:14px;border-radius:4px;margin-top:3px;border:1px solid rgba(0,0,0,.2)}
+.schoolCard .snm{font-size:15px;font-weight:700}
+.schoolCard .snm small{font-weight:400;color:var(--muted);font-size:12px;margin-left:4px}
+.schoolCard .srng{font-size:12.5px;color:#3f4f4a;line-height:1.5;margin-top:2px}
+.tagFree{display:inline-block;background:#e7f1ff;color:#1a5fa8;border-radius:4px;font-size:11px;padding:1px 6px;margin-left:6px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="shell">
+<header>
+  <div class="brandRow">
+    <div class="badge"><img src="assets/logo.png" alt="柚子林顯祐"></div>
+    <div>
+      <h1>大桃園學區地圖 <span style="font-size:11px;color:var(--amber)">115學年度</span></h1>
+      <div class="sub">桃園市全13區｜柚子幫你找學區宅</div>
+    </div>
+    <nav class="navlinks">
+      <a href="index.html" class="on">🎓 學區地圖</a>
+      <a href="poi.html">🛒 周邊機能</a>
+      <a href="trash.html">🚛 垃圾車</a>
+    </nav>
+  </div>
+
+  <div class="stepRow">
+    <select id="selCounty"><option value="桃園市">① 桃園市</option></select>
+    <select id="selDistrict"><option value="">② 選地區</option></select>
+  </div>
+  <div class="addrRow">
+    <input id="addrInput" type="text" placeholder="③ 選好地區後，輸入路名門牌" enterkeyhint="search" disabled autocomplete="off">
+    <button id="searchBtn">查學區</button>
+    <button id="gpsBtn" title="用目前位置查學區">📍定位</button>
+  </div>
+  <div class="hintline">先選地區，再只要打路名門牌就好，不用重複打行政區名稱。</div>
+
+  <div class="toolRow">
+    <div class="seg">
+      <button id="segElem" class="on">國小</button>
+      <button id="segJr">國中</button>
+    </div>
+    <select id="selVillDirect"><option value="">或直接選里查詢</option></select>
+    <label class="toggleLbl"><input type="checkbox" id="chkNames" checked> 顯示校名</label>
+  </div>
+</header>
+
+<div id="map"></div>
+</div>
+
+<div id="resultPanel">
+  <div class="handle" id="panelHandle"><i></i><span class="peek">▲ 上滑看學區</span></div>
+  <button class="closeBtn" onclick="closePanel()">✕</button>
+  <div id="panelBody"></div>
+</div>
+<div id="msgBox"></div>
+
+<footer id="creditBar">
+  <b>中壢房產顧問柚子</b>
+  <a href="tel:0968877611">📞 0968-877-611</a>
+  <span class="fine">© 2026 資料僅供參考，正式學區請以桃園市教育局公告為準</span>
+</footer>
+
+<script src="lib/leaflet.js"></script>
+<script src="geocode.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

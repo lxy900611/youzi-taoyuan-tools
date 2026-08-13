@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>大桃園周邊機能地圖 - 柚子幫你找學區宅</title>
+<meta name="description" content="輸入地址查桃園市全13區附近的市場、超市、超商、公車站、醫療、公園等生活機能，柚子（林顯祐）整理製作。">
+<link rel="stylesheet" href="lib/leaflet.css">
+<link rel="stylesheet" href="shell.css">
+<style>
+/* poi.html 專屬：機能結果卡片 */
+.poiCard{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid #e4e9e6;border-radius:10px;margin-bottom:6px}
+.poiCard .picon{flex:none;width:34px;height:34px;border-radius:9px;background:#eef6f4;display:flex;align-items:center;justify-content:center;font-size:17px}
+.poiCard .pnm{font-size:14.5px;font-weight:700}
+.poiCard .pd{font-size:12px;color:var(--muted);margin-top:1px}
+.poiCard.best .picon{background:var(--amber);color:#fff}
+.bestbadge{display:inline-block;background:var(--amber);color:#fff;border-radius:4px;font-size:10.5px;padding:1px 5px;margin-right:5px;font-weight:700;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="shell">
+<header>
+  <div class="brandRow">
+    <div class="badge"><img src="assets/logo.png" alt="柚子林顯祐"></div>
+    <div>
+      <h1>大桃園周邊機能地圖</h1>
+      <div class="sub">桃園市全13區｜柚子幫你找學區宅</div>
+    </div>
+    <nav class="navlinks">
+      <a href="index.html">🎓 學區地圖</a>
+      <a href="poi.html" class="on">🛒 周邊機能</a>
+      <a href="trash.html">🚛 垃圾車</a>
+    </nav>
+  </div>
+
+  <div class="stepRow">
+    <select id="selCounty"><option value="桃園市">① 桃園市</option></select>
+    <select id="selDistrict">
+      <option value="">② 選地區</option>
+      <option value="桃園區">桃園區</option>
+      <option value="中壢區">中壢區</option>
+      <option value="平鎮區">平鎮區</option>
+      <option value="八德區">八德區</option>
+      <option value="楊梅區">楊梅區</option>
+      <option value="蘆竹區">蘆竹區</option>
+      <option value="大溪區">大溪區</option>
+      <option value="大園區">大園區</option>
+      <option value="龜山區">龜山區</option>
+      <option value="龍潭區">龍潭區</option>
+      <option value="新屋區">新屋區</option>
+      <option value="觀音區">觀音區</option>
+      <option value="復興區">復興區</option>
+    </select>
+  </div>
+  <div class="addrRow">
+    <input id="addrInput" type="text" placeholder="③ 選好地區後，輸入路名門牌" enterkeyhint="search" disabled autocomplete="off">
+    <button id="searchBtn">查詢</button>
+    <button id="gpsBtn" title="用目前位置查詢">📍定位</button>
+  </div>
+  <div class="hintline">查好地址後，點下面的分類看附近有什麼。</div>
+
+  <div class="catRow" id="catRow"></div>
+</header>
+
+<div id="map"></div>
+</div>
+
+<div id="resultPanel">
+  <div class="handle" id="panelHandle"><i></i><span class="peek">▲ 上滑看清單</span></div>
+  <button class="closeBtn" onclick="closePanel()">✕</button>
+  <div id="panelBody"></div>
+</div>
+<div id="msgBox"></div>
+
+<footer id="creditBar">
+  <b>中壢房產顧問柚子</b>
+  <a href="tel:0968877611">📞 0968-877-611</a>
+  <span class="fine">© 2026 機能資料來自 OpenStreetMap 社群協作，僅供參考，實際請以現場為準</span>
+</footer>
+
+<script src="lib/leaflet.js"></script>
+<script src="geocode.js"></script>
+<script src="poi.js"></script>
+</body>
+</html>

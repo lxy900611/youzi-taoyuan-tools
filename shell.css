@@ -1,0 +1,93 @@
+/* shell.css — 中壢．平鎮工具箱共用外殼樣式
+ * 供 index.html（學區地圖）、poi.html（周邊機能）、trash.html（垃圾車）共用。
+ * 內容區塊（結果卡片等）各頁自己定義，這裡只放版型骨架。
+ */
+:root{
+  --teal:#0b5d52; --teal2:#0f7a6c; --amber:#e8734a; --bg:#f7f5f1;
+  --line:#06c755; --red:#c0392b; --ink:#20302c; --muted:#6b7d76;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg)}
+#shell{display:flex;flex-direction:column;height:100%}
+
+/* ---------- 頂部工具列 ---------- */
+header{background:var(--teal);color:#fff;padding:10px 12px 8px;z-index:1200;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.brandRow{display:flex;align-items:center;gap:10px}
+.brandRow .badge{width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;padding:4px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.brandRow .badge img{width:100%;height:100%;object-fit:contain}
+.brandRow h1{font-size:16.5px;font-weight:700;letter-spacing:.5px}
+.brandRow .sub{font-size:11px;color:#cfe6e0;margin-top:1px}
+.navlinks{margin-left:auto;display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;flex:none}
+.navlinks a{font-size:11.5px;color:#cfe6e0;text-decoration:none;border:1px solid #2c6a5c;border-radius:8px;padding:5px 8px;white-space:nowrap}
+.navlinks a.on{background:var(--amber);border-color:var(--amber);color:var(--teal);font-weight:700}
+
+.stepRow{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.stepRow select{background:#0d6d60;color:#fff;border:1px solid #17897a;border-radius:8px;padding:8px 8px;font-size:13.5px;flex:1;min-width:84px}
+.stepRow select:disabled{opacity:.45}
+.addrRow{display:flex;gap:6px;margin-top:6px}
+.addrRow input{flex:1;min-width:0;border:none;border-radius:8px;padding:9px 12px;font-size:15px;outline:none}
+.addrRow input:disabled{background:#e7e7e3;color:#999}
+.addrRow button{background:var(--amber);color:#fff;border:none;border-radius:8px;padding:0 14px;font-size:14.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.addrRow #gpsBtn{background:#fff;color:var(--teal);padding:0 10px;font-size:13px}
+.addrRow #gpsBtn.busy{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.hintline{font-size:11px;color:#cfe6e0;margin-top:4px}
+
+.toolRow{display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;background:#0d6d60;border-radius:8px;overflow:hidden}
+.seg button{background:transparent;color:#cfe6e0;border:none;padding:6px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--amber);color:#fff}
+.toolRow select{background:#0d6d60;color:#fff;border:1px solid #17897a;border-radius:8px;padding:6px 8px;font-size:12.5px}
+.toggleLbl{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:12px;color:#cfe6e0;cursor:pointer;user-select:none}
+
+/* ---------- 分類篩選列（周邊機能用，放這裡方便共用視覺語言） ---------- */
+.catRow{display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.catRow::-webkit-scrollbar{display:none}
+.catRow button{flex:none;background:#0d6d60;color:#cfe6e0;border:1px solid #17897a;border-radius:20px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.catRow button.on{background:var(--amber);color:#fff;border-color:var(--amber)}
+
+/* ---------- 地圖 ---------- */
+#map{flex:1;z-index:1}
+.villLabel{background:none;border:none;box-shadow:none}
+.villLabel span{display:inline-block;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:#173;background:rgba(255,255,255,.85);border:1px solid rgba(11,93,82,.35);border-radius:4px;padding:1px 4px;white-space:nowrap}
+
+/* ---------- 結果面板（骨架，內容各頁自訂） ---------- */
+#resultPanel{position:fixed;left:0;right:60px;bottom:24px;background:#fff;border-radius:0 18px 0 0;box-shadow:0 -4px 26px rgba(0,0,0,.3);z-index:1300;max-height:64vh;display:none;flex-direction:column;transition:transform .25s ease}
+#resultPanel.open{display:flex}
+#resultPanel.collapsed{transform:translateY(calc(100% - 40px))}
+#resultPanel .handle{padding:9px 0 5px;text-align:center;flex:none;cursor:pointer;touch-action:none;user-select:none}
+#resultPanel .handle i{display:inline-block;width:42px;height:4px;border-radius:2px;background:#b9c4bf;vertical-align:middle}
+#resultPanel .handle .peek{display:none;font-size:12px;color:var(--muted);font-weight:700;margin-left:8px;vertical-align:middle}
+#resultPanel.collapsed .handle .peek{display:inline}
+#resultPanel .closeBtn{position:absolute;top:8px;right:10px;background:#eef2f0;border:none;border-radius:50%;width:30px;height:30px;font-size:15px;color:#555;cursor:pointer}
+#panelBody{overflow-y:auto;padding:4px 16px 14px}
+.rTitle{font-size:18px;font-weight:800;color:var(--teal);padding-right:36px}
+.rAddr{font-size:12.5px;color:var(--muted);margin-top:2px}
+.rSummary{margin-top:10px;background:#eef7f0;border:1px solid #c3e0c9;border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.55}
+.rSummary.warn{background:#fff6ec;border-color:#f0d3a8}
+.rSummary b{color:var(--teal)}
+.blk{margin-top:12px}
+.blk h3{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.navBtn{flex:none;align-self:center;margin-left:auto;display:flex;flex-direction:column;align-items:center;gap:1px;background:#eef6f4;color:var(--teal2);border:1px solid #c9e2dc;border-radius:9px;padding:6px 9px;font-size:11.5px;font-weight:700;text-decoration:none;line-height:1.2}
+.disclaimer{margin-top:12px;background:#fdf7f5;border:1px solid #edd0c7;border-radius:10px;padding:9px 12px;font-size:12.5px;color:#8a4b3b;line-height:1.6}
+.disclaimer a{color:#8a4b3b;font-weight:700}
+.ctaGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.ctaGrid a{display:flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;padding:11px 4px;font-size:14.5px;font-weight:700;text-decoration:none}
+.ctaGrid .cLine{background:var(--line);color:#fff}
+.ctaGrid .cTel{background:var(--teal);color:#fff}
+.ctaGrid.single{grid-template-columns:1fr}
+.ctaHead{margin-top:14px;font-size:13.5px;font-weight:700;color:var(--teal)}
+
+/* ---------- 提示與頁尾 ---------- */
+#msgBox{position:fixed;top:150px;left:50%;transform:translateX(-50%);background:rgba(20,45,40,.92);color:#fff;font-size:13.5px;padding:9px 16px;border-radius:20px;z-index:1400;display:none;max-width:88vw;text-align:center;line-height:1.5}
+.leaflet-control-attribution{font-size:9px!important;bottom:24px!important}
+#creditBar{position:fixed;left:0;right:0;bottom:0;z-index:1350;background:rgba(11,93,82,.95);color:#dcece7;font-size:11px;line-height:24px;height:24px;display:flex;align-items:center;gap:10px;padding:0 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+#creditBar::-webkit-scrollbar{display:none}
+#creditBar b{color:#fff;font-weight:700}
+#creditBar a{color:var(--amber);text-decoration:none;font-weight:700}
+#creditBar .fine{color:#9fc0b6;font-weight:400}
+.leaflet-bottom{bottom:24px}
+@media(min-width:820px){
+  #resultPanel{left:16px;right:auto;bottom:40px;width:400px;border-radius:16px;max-height:74vh}
+  .brandRow h1{font-size:18px}
+}
