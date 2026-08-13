@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: youzi-taoyuan-trash-proxy
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
