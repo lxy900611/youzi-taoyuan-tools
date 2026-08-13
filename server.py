@@ -10,16 +10,33 @@
 - 使用者已經確認接受這個風險（見專案對話紀錄），正式上線前建議向桃園市環境管理處確認使用許可。
 """
 import re
+import ssl
 import time
 import threading
 from flask import Flask, request, jsonify
 import requests
+from requests.adapters import HTTPAdapter
 
 app = Flask(__name__)
 
 TYOEM_BASE = "https://route.tyoem.gov.tw"
 TYOEM_API = TYOEM_BASE + "/web/dataManagerAgentWeb.jsp"
 UA = "Mozilla/5.0 (compatible; yozu-trash-proxy/1.0)"
+
+
+class LenientX509Adapter(HTTPAdapter):
+    """
+    route.tyoem.gov.tw 的憑證鏈缺少 Subject Key Identifier 這個 x509v3 擴充欄位，
+    新版 OpenSSL（3.2+，較新的部署環境常見）預設用 VERIFY_X509_STRICT 會擋下這種
+    憑證，導致 SSLCertVerificationError。這裡只關掉那一項嚴格檢查，其餘憑證驗證
+    （信任鏈、網域名稱、有效期限）完全不受影響，仍然是安全的 HTTPS 連線。
+    """
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = ssl.create_default_context()
+        if hasattr(ssl, "VERIFY_X509_STRICT"):
+            ctx.verify_flags &= ~ssl.VERIFY_X509_STRICT
+        kwargs["ssl_context"] = ctx
+        return super().init_poolmanager(*args, **kwargs)
 
 _session_lock = threading.Lock()
 _session = {"http": None, "token": None, "fetched_at": 0}
@@ -28,6 +45,7 @@ SESSION_MAX_AGE = 600  # 秒；保守一點，過期就重抓，避免用到失�
 
 def refresh_session():
     s = requests.Session()
+    s.mount("https://", LenientX509Adapter())
     r = s.get(TYOEM_BASE + "/", headers={"User-Agent": UA}, timeout=15)
     r.raise_for_status()
     m = re.search(r'id="random_form"[^>]*value="([^"]+)"', r.text)
