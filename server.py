@@ -9,6 +9,7 @@
 - 這是逆向工程找出來的內部介面，官方沒有正式公告、沒有授權條款，可能隨時改版失效。
 - 使用者已經確認接受這個風險（見專案對話紀錄），正式上線前建議向桃園市環境管理處確認使用許可。
 """
+import os
 import re
 import ssl
 import time
@@ -85,7 +86,7 @@ def call_tyoem(dcfid, params, retry=True):
 
 def cors(resp):
     resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+    resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
     return resp
 
@@ -134,13 +135,69 @@ def trash_poi():
     return jsonify({"ok": True, "pts": pts})
 
 
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
+NOTION_LEAD_DB_ID = "72c3a789-4294-41fa-8efc-a1eb717b04ca"  # 免費行情評估名單
+NOTION_VERSION = "2022-06-28"
+LEAD_TOPIC_OPTIONS = {"稅務問題", "行情評估", "貸款／自備款規劃", "屋況／驗屋建議", "賣屋流程", "其他"}
+
+
+@app.route("/api/lead-submit", methods=["POST", "OPTIONS"])
+def lead_submit():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    if not NOTION_TOKEN:
+        return jsonify({"ok": False, "msg": "伺服器尚未設定 Notion 金鑰，請直接聯絡柚子"}), 500
+
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()
+    phone = (data.get("phone") or "").strip()
+    line_id = (data.get("line_id") or "").strip()
+    address = (data.get("address") or "").strip()
+    topics_in = data.get("topics") or []
+
+    if not name or not phone:
+        return jsonify({"ok": False, "msg": "姓名和電話為必填"}), 400
+    if not isinstance(topics_in, list):
+        topics_in = []
+    topics = [t for t in topics_in if isinstance(t, str) and t in LEAD_TOPIC_OPTIONS][:10]
+
+    payload = {
+        "parent": {"database_id": NOTION_LEAD_DB_ID},
+        "properties": {
+            "姓名": {"title": [{"text": {"content": name[:200]}}]},
+            "電話": {"phone_number": phone[:50]},
+            "LINE ID": {"rich_text": [{"text": {"content": line_id[:200]}}]},
+            "諮詢地址或地號": {"rich_text": [{"text": {"content": address[:500]}}]},
+            "諮詢項目": {"multi_select": [{"name": t} for t in topics]},
+            "處理狀態": {"select": {"name": "未聯絡"}},
+            "來源": {"rich_text": [{"text": {"content": "中壢房產顧問柚子官網"}}]},
+        },
+    }
+    try:
+        r = requests.post(
+            "https://api.notion.com/v1/pages",
+            headers={
+                "Authorization": f"Bearer {NOTION_TOKEN}",
+                "Notion-Version": NOTION_VERSION,
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=15,
+        )
+        r.raise_for_status()
+    except Exception as e:
+        return jsonify({"ok": False, "msg": "送出失敗，麻煩直接加 LINE 聯絡柚子（" + str(e) + "）"}), 502
+
+    return jsonify({"ok": True})
+
+
 @app.route("/api/health")
 def health():
     return jsonify({"ok": True})
 
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 8767))
     host = "0.0.0.0" if os.environ.get("PORT") else "127.0.0.1"
     app.run(host=host, port=port, debug=False)
