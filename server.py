@@ -140,6 +140,39 @@ NOTION_LEAD_DB_ID = "72c3a789-4294-41fa-8efc-a1eb717b04ca"  # 免費行情評估
 NOTION_VERSION = "2022-06-28"
 LEAD_TOPIC_OPTIONS = {"稅務問題", "行情評估", "貸款／自備款規劃", "屋況／驗屋建議", "賣屋流程", "其他"}
 
+GMAIL_USER = os.environ.get("GMAIL_USER", "")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
+NOTIFY_EMAIL_TO = os.environ.get("NOTIFY_EMAIL_TO", "")
+
+
+def send_lead_notification_email(name, phone, line_id, address, topics):
+    """新名單寫進 Notion 後，順便寄一封通知信。三個環境變數沒設定齊全就直接跳過，
+    不會讓表單送出失敗——email 通知是錦上添花，Notion 才是主要紀錄。"""
+    if not (GMAIL_USER and GMAIL_APP_PASSWORD and NOTIFY_EMAIL_TO):
+        return
+    import smtplib
+    from email.mime.text import MIMEText
+
+    topics_text = "、".join(topics) if topics else "（未選擇）"
+    body = (
+        f"姓名：{name}\n"
+        f"電話：{phone}\n"
+        f"LINE ID：{line_id or '（未填）'}\n"
+        f"位置：{address or '（未填）'}\n"
+        f"諮詢項目：{topics_text}\n"
+        f"\n完整名單請見 Notion「免費行情評估名單」資料庫。"
+    )
+    msg = MIMEText(body, "plain", "utf-8")
+    msg["Subject"] = f"【新名單】{name} - 免費行情評估"
+    msg["From"] = GMAIL_USER
+    msg["To"] = NOTIFY_EMAIL_TO
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as smtp:
+            smtp.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+            smtp.sendmail(GMAIL_USER, [NOTIFY_EMAIL_TO], msg.as_string())
+    except Exception:
+        pass
+
 
 @app.route("/api/lead-submit", methods=["POST", "OPTIONS"])
 def lead_submit():
@@ -189,6 +222,7 @@ def lead_submit():
     except Exception as e:
         return jsonify({"ok": False, "msg": "送出失敗，麻煩直接加 LINE 聯絡柚子（" + str(e) + "）"}), 502
 
+    send_lead_notification_email(name, phone, line_id, address, topics)
     return jsonify({"ok": True})
 
 
