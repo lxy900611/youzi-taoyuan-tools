@@ -276,5 +276,5 @@ document.getElementById("gpsBtn").onclick = locateMe;
 
 initMap();
 renderCatRow();
-fetch("data/address_points.json").then(r => r.json()).then(loadAddressPoints)
+fetch("/data/address_points.json").then(r => r.json()).then(loadAddressPoints)
   .catch(() => showMsg("門牌資料載入失敗，可改用GPS定位查詢"));

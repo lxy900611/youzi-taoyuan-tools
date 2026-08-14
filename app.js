@@ -367,9 +367,9 @@ map.on("zoomend", () => { if (villageGeo) rebuildLabels(); });
 
 /* ================= 啟動 ================= */
 Promise.all([
-  fetch("data/zone_data.json").then(r => r.json()),
-  fetch("data/villages.geojson").then(r => r.json()),
-  fetch("data/address_points.json").then(r => r.json())
+  fetch("/data/zone_data.json").then(r => r.json()),
+  fetch("/data/villages.geojson").then(r => r.json()),
+  fetch("/data/address_points.json").then(r => r.json())
 ]).then(([zd, geo, addr]) => {
   zoneData = zd;
   villageGeo = geo;

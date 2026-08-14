@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>大桃園周邊機能地圖 - 柚子幫你找學區宅</title>
 <meta name="description" content="輸入地址查桃園市全13區附近的市場、超市、超商、公車站、醫療、公園等生活機能，柚子（林顯祐）整理製作。">
-<link rel="stylesheet" href="lib/leaflet.css">
-<link rel="stylesheet" href="shell.css">
+<link rel="stylesheet" href="/lib/leaflet.css">
+<link rel="stylesheet" href="/shell.css">
 <style>
 /* poi.html 專屬：機能結果卡片 */
 .poiCard{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid #e4e9e6;border-radius:10px;margin-bottom:6px}
@@ -21,15 +21,15 @@
 <div id="shell">
 <header>
   <div class="brandRow">
-    <div class="badge"><img src="assets/logo.png" alt="柚子林顯祐"></div>
+    <div class="badge"><img src="/assets/logo.png" alt="柚子林顯祐"></div>
     <div>
       <h1>大桃園周邊機能地圖</h1>
       <div class="sub">桃園市全13區｜柚子幫你找學區宅</div>
     </div>
     <nav class="navlinks">
-      <a href="index.html">🎓 學區地圖</a>
-      <a href="poi.html" class="on">🛒 周邊機能</a>
-      <a href="trash.html">🚛 垃圾車</a>
+      <a href="/">🎓 學區地圖</a>
+      <a href="/nearby/" class="on">🛒 周邊機能</a>
+      <a href="/trash/">🚛 垃圾車</a>
     </nav>
   </div>
 
@@ -78,8 +78,8 @@
   <span class="fine">© 2026 機能資料來自 OpenStreetMap 社群協作，僅供參考，實際請以現場為準</span>
 </footer>
 
-<script src="lib/leaflet.js"></script>
-<script src="geocode.js"></script>
-<script src="poi.js"></script>
+<script src="/lib/leaflet.js"></script>
+<script src="/geocode.js"></script>
+<script src="/poi.js"></script>
 </body>
 </html>
