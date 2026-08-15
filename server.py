@@ -226,6 +226,65 @@ def lead_submit():
     return jsonify({"ok": True})
 
 
+NOTION_AGENT_DB_ID = "34323628-0001-4646-a504-84c43c40d6e4"  # 同事名單
+
+
+@app.route("/api/agent-add", methods=["POST", "OPTIONS"])
+def agent_add():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    if not NOTION_TOKEN:
+        return jsonify({"ok": False, "msg": "伺服器尚未設定 Notion 金鑰"}), 500
+
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()
+    tel = (data.get("tel") or "").strip()
+    line = (data.get("line") or "").strip()
+    link = (data.get("link") or "").strip()
+    page_id = (data.get("page_id") or "").strip()
+
+    if not name:
+        return jsonify({"ok": False, "msg": "姓名為必填"}), 400
+
+    properties = {
+        "姓名": {"title": [{"text": {"content": name[:200]}}]},
+        "電話": {"phone_number": tel[:50] if tel else None},
+        "LINE": {"rich_text": [{"text": {"content": line[:200]}}] if line else []},
+        "生成的連結": {"url": link[:2000] if link else None},
+    }
+
+    try:
+        if page_id:
+            r = requests.patch(
+                f"https://api.notion.com/v1/pages/{page_id}",
+                headers={
+                    "Authorization": f"Bearer {NOTION_TOKEN}",
+                    "Notion-Version": NOTION_VERSION,
+                    "Content-Type": "application/json",
+                },
+                json={"properties": properties},
+                timeout=15,
+            )
+        else:
+            r = requests.post(
+                "https://api.notion.com/v1/pages",
+                headers={
+                    "Authorization": f"Bearer {NOTION_TOKEN}",
+                    "Notion-Version": NOTION_VERSION,
+                    "Content-Type": "application/json",
+                },
+                json={"parent": {"database_id": NOTION_AGENT_DB_ID}, "properties": properties},
+                timeout=15,
+            )
+        r.raise_for_status()
+        result = r.json()
+    except Exception as e:
+        return jsonify({"ok": False, "msg": "同步 Notion 失敗（" + str(e) + "）"}), 502
+
+    return jsonify({"ok": True, "page_id": result.get("id")})
+
+
 @app.route("/api/health")
 def health():
     return jsonify({"ok": True})
